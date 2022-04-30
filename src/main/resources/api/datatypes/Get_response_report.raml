@@ -1,0 +1,24 @@
+#%RAML 1.0 DataType
+uses:
+  mycommon-librery: exchange_modules/befdfb69-a350-4b5f-a789-cf327ed43046/mycommon-fragments/1.0.18/mycommon-fragments.raml
+type: object
+properties:
+ assessmnetReportResponse:
+           required: true
+           type: object
+           properties:
+              userDetails:
+                required: true
+                type: mycommon-librery.userDetails
+              assessmentdetails:
+                 required: true
+                 type: object
+                 properties:
+                   results:
+                     type: number
+                     example: 90
+  
+              submitionDateTime:
+                  required: true
+                  type: mycommon-librery.submitionDateTime
+                  

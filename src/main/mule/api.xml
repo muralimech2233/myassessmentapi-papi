@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <flow name="api-main">
+        <http:listener path="/api/*" config-ref="api-httpListenerConfig">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="api-config"/>
+        <error-handler ref="global-error-handlerError_Handler">
+            
+        </error-handler>
+    </flow>
+    <flow name="api-console">
+        <http:listener path="/console/*" config-ref="api-httpListenerConfig">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="api-config"/>
+        <error-handler ref="global-error-handlerError_Handler">
+             
+        </error-handler>
+    </flow>
+    <flow name="get:\fundassessment:api-config" doc:id="cf9f2d47-b396-48dc-a51f-3bb146e572a5">
+    <flow-ref doc:name="get assesment data setup flow" doc:id="b0c4bc96-00f5-4fb7-b94e-bd37066bf729" name="assesmentdatasetupflow" />
+		<logger level="INFO" doc:name="Start get :/assessment  log" doc:id="8ab4feba-e7d5-49bd-b515-2ea59faa1337" message="#[%dw 2.0
+&#10;output application/json indent = false
+&#10;
+&#10;---
+&#10;{
+&#10;	Timestamp: vars.requestime,
+&#10;	transactionid:vars.requestmessage.attributes.headers.'x-fms-transactionId',
+&#10;	Appname:app.name,
+&#10;	flowname:flow.name,
+&#10;	BussinessProcessName: &quot;Accessment details&quot;,
+&#10;	Catogeory:&quot;Assessment&quot;,
+&#10;	OriginationgApplicvation:&quot;ProcessAPI&quot;,
+&#10;	DestinationApplication:&quot;salesforce&quot;,
+&#10;	CustomerID:&quot;NA&quot;,
+&#10;	txtState:&quot;START&quot;
+&#10;}]" />
+		<flow-ref doc:name="Flow Reference get assessment details" doc:id="ddff2a1e-13c4-4142-9b56-71143e916b93" name="get-sfdc-assessment-details" />
+		<logger level="INFO" doc:name="end get :/assessment  log" doc:id="a4472953-140a-4f4f-9ff5-e739ff639820" message="#[%dw 2.0
+&#10;output application/json indent = false
+&#10;
+&#10;---
+&#10;{
+&#10;	Timestamp:now(),
+&#10;	transactionid:vars.requestmessage.attributes.headers.'x-fms-transactionId',
+&#10;	Appname:app.name,
+&#10;	flowname:flow.name,
+&#10;	BussinessProcessName: &quot;Accessment details&quot;,
+&#10;	Catogeory:&quot;Assessment&quot;,
+&#10;	OriginationgApplicvation:&quot;ProcessAPI&quot;,
+&#10;	DestinationApplication:&quot;salesforce&quot;,
+&#10;	CustomerID:&quot;NA&quot;,
+&#10;	Processingtime: now() - vars.requestime,
+&#10;	txtState:&quot;START&quot;
+&#10;}]"/>
+		<error-handler ref="global-APP-handlerError_Handler1" />
+    </flow>
+    <flow name="get:\fundassessment\reports\(customerId):api-config">
+    <flow-ref doc:name="post assesment data setup flow" doc:id="c6a23648-b674-4f0f-8b7c-2fe26e54c2f8" name="assesmentdatasetupflow"/>
+		<logger level="INFO" doc:name="Start post:/assessment  log" doc:id="dc95b4a9-50b4-4864-815a-f4d694dc5e4a" message="#[%dw 2.0
+&#10;&#10;output application/json indent = false
+&#10;&#10;
+&#10;&#10;---
+&#10;&#10;{
+&#10;&#10;	Timestamp: vars.requestime,
+&#10;&#10;	transactionid:vars.requestmessage.attributes.headers.'x-fms-transactionId',
+&#10;&#10;	Appname:app.name,
+&#10;&#10;	flowname:flow.name,
+&#10;&#10;	BussinessProcessName: &quot;post Assessment details&quot;,
+&#10;&#10;	Catogeory:&quot;post Assessment&quot;,
+&#10;&#10;	OriginationgApplicvation:&quot;ProcessAPI&quot;,
+&#10;&#10;	DestinationApplication:&quot;salesforce&quot;,
+&#10;&#10;	CustomerID:&quot;NA&quot;,
+&#10;&#10;	txtState:&quot;START&quot;
+&#10;&#10;}]" />
+		<flow-ref doc:name="Flow Reference get assessment details" doc:id="443e0053-81c4-4c0c-9f6a-9eb746ce3f13" name="get-sfdc-assessment-report-details" />
+		<logger level="INFO" doc:name="post end:/assessment  log" doc:id="d5f2cc5d-88c8-4d04-8342-09dfbb4b080c" message="#[%dw 2.0
+&#10;&#10;output application/json indent = false
+&#10;&#10;
+&#10;&#10;---
+&#10;&#10;{
+&#10;&#10;	Timestamp:now(),
+&#10;&#10;	transactionid:vars.requestmessage.attributes.headers.'x-fms-transactionId',
+&#10;&#10;	Appname:app.name,
+&#10;&#10;	flowname:flow.name,
+&#10;&#10;	BussinessProcessName: &quot;post Assessment details&quot;,
+&#10;&#10;	Catogeory:&quot;post Assessment&quot;,
+&#10;&#10;	OriginationgApplicvation:&quot;ProcessAPI&quot;,
+&#10;&#10;	DestinationApplication:&quot;salesforce&quot;,
+&#10;&#10;	CustomerID:&quot;NA&quot;,
+&#10;&#10;	Processingtime: now() - vars.requestime,
+&#10;&#10;	txtState:&quot;START&quot;
+&#10;&#10;}]"/>
+		<error-handler ref="global-APP-handlerError_Handler1" />
+    </flow>
+    <flow name="post:\fundassessment:application\json:api-config">
+    <flow-ref doc:name="post assesment data setup flow" doc:id="3650fdfd-3f16-4dcf-8a2e-aefd5a676048" name="assesmentdatasetupflow"/>
+		<logger level="INFO" doc:name="Start post:/assessment  log" doc:id="eee200ac-651b-4b7e-bc59-ce252e08612a" message="#[%dw 2.0
+&#10;&#10;output application/json indent = false
+&#10;&#10;
+&#10;&#10;---
+&#10;&#10;{
+&#10;&#10;	Timestamp: vars.requestime,
+&#10;&#10;	transactionid:vars.requestmessage.attributes.headers.'x-fms-transactionId',
+&#10;&#10;	Appname:app.name,
+&#10;&#10;	flowname:flow.name,
+&#10;&#10;	BussinessProcessName: &quot;post Assessment details&quot;,
+&#10;&#10;	Catogeory:&quot;post Assessment&quot;,
+&#10;&#10;	OriginationgApplicvation:&quot;ProcessAPI&quot;,
+&#10;&#10;	DestinationApplication:&quot;salesforce&quot;,
+&#10;&#10;	CustomerID:&quot;NA&quot;,
+&#10;&#10;	txtState:&quot;START&quot;
+&#10;&#10;}]" />
+		<flow-ref doc:name="Flow Reference get assessment details" doc:id="97ce69aa-57e0-4c13-a03b-5e3fdebfb394" name="post-sfdc-assessment-details" />
+		<logger level="INFO" doc:name="post end:/assessment  log" doc:id="16e2198c-5ce9-4669-8783-f43c2ee9cf9e" message="#[%dw 2.0
+&#10;&#10;output application/json indent = false
+&#10;&#10;
+&#10;&#10;---
+&#10;&#10;{
+&#10;&#10;	Timestamp:now(),
+&#10;&#10;	transactionid:vars.requestmessage.attributes.headers.'x-fms-transactionId',
+&#10;&#10;	Appname:app.name,
+&#10;&#10;	flowname:flow.name,
+&#10;&#10;	BussinessProcessName: &quot;post Assessment details&quot;,
+&#10;&#10;	Catogeory:&quot;post Assessment&quot;,
+&#10;&#10;	OriginationgApplicvation:&quot;ProcessAPI&quot;,
+&#10;&#10;	DestinationApplication:&quot;salesforce&quot;,
+&#10;&#10;	CustomerID:&quot;NA&quot;,
+&#10;&#10;	Processingtime: now() - vars.requestime,
+&#10;&#10;	txtState:&quot;START&quot;
+&#10;&#10;}]"/>
+		<error-handler ref="global-APP-handlerError_Handler1" />
+    </flow>
+</mule>

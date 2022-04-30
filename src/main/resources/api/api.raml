@@ -1,0 +1,56 @@
+#%RAML 1.0
+title: myassessment-xapi
+version: 1.0.0
+protocols:
+  - HTTP
+  - HTTPS
+ 
+uses:
+  mycommon-librery: exchange_modules/befdfb69-a350-4b5f-a789-cf327ed43046/mycommon-fragments/1.0.18/mycommon-fragments.raml
+
+types:
+ get-report-response: !include /datatypes/Get_response_report.raml
+/fundassessment:
+  get:
+    description: this method is used to get the assessment questions
+    is:
+      -  mycommon-librery.my-common-header
+      -  mycommon-librery.my-common-error
+   
+    responses:
+      200:
+        body:
+          application/json:
+           type: mycommon-librery.get-response
+           example: !include /Examples/200_GET_response.json
+  post:
+    description: "This method is used to submit the questions"
+    is:
+      -  mycommon-librery.my-common-header
+      -  mycommon-librery.my-common-error
+      
+    body:
+       application/json:
+         type: mycommon-librery.post-request
+         example: !include /Examples/POST_request.json
+    responses:
+      201:
+        body:
+          application/json:
+            type: mycommon-librery.post-response
+            example: !include /Examples/201_response.json
+  /reports:
+    /{customerId}:
+      get:
+        description: this method is used to get the assessment Report
+        is:
+          - mycommon-librery.my-common-header
+          - mycommon-librery.my-common-error
+        responses:
+          "200":
+            body:
+              application/json:
+                type: get-report-response
+                example: !include /Examples/200_GET_Report_response.json
+                
+   
